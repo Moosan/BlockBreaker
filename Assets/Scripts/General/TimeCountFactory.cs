@@ -1,8 +1,8 @@
 ﻿using System;
 using UniRx;
-namespace BlockBreaker.Manager
+namespace BlockBreaker.General
 {
-    public class TimeCountManager
+    public class TimeCountFactory
     {
         public IObservable<int> CreateCountDownObservable(int CountTime)
         {

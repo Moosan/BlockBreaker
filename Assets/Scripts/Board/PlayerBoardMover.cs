@@ -2,19 +2,20 @@
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
+using BlockBreaker.General;
 namespace BlockBreaker.Board
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class PlayerBoardMover : MonoBehaviour
+    public class PlayerBoardMover : MonoBehaviour,IGameInitializable
     {
         private bool moveStart = false;
         private Rigidbody _rigidBody;
-        private ReactiveProperty<float> Speed = new ReactiveProperty<float>(1);
+        private readonly ReactiveProperty<float> Speed = new ReactiveProperty<float>(1);
         private void Awake()
         {
             _rigidBody = GetComponent<Rigidbody>();
         }
-        public void Init(IObservable<Unit> moveStartObservable,IMoveInput moveInput)
+        public void Init(IObservable<Unit> moveStartObservable,IMoveInput moveInput,GameRule gameRule)
         {
             moveStartObservable
                 .TakeUntilDestroy(gameObject)
@@ -38,9 +39,13 @@ namespace BlockBreaker.Board
                         .Subscribe(Move)
                         .AddTo(gameObject);
                 });
+            gameRule
+                .BoardSpeed
+                .TakeUntilDestroy(gameObject)
+                .Subscribe(SetSpeed);
             
         }
-        public void SetSpeed(float speed)
+        private void SetSpeed(float speed)
         {
             Speed.Value = speed;
         }
@@ -48,9 +53,5 @@ namespace BlockBreaker.Board
         {
             _rigidBody.velocity = Vector3.right * moveValue * Speed.Value;
         }
-    }
-    public interface IMoveInput
-    {
-        IObservable<float> MoveVertical { get; }
     }
 }

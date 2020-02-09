@@ -2,7 +2,7 @@
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
-namespace BlockBreaker.Board
+namespace BlockBreaker.General
 {
     public class AxisMoveController : MonoBehaviour, IMoveInput
     {
