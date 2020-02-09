@@ -1,6 +1,6 @@
 ﻿using System;
 using UniRx;
-namespace BlockBreaker
+namespace BlockBreaker.Manager
 {
     public class TimeCountManager
     {

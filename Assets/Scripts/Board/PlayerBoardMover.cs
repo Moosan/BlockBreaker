@@ -2,7 +2,7 @@
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
-namespace BlockBreaker
+namespace BlockBreaker.Board
 {
     [RequireComponent(typeof(Rigidbody))]
     public class PlayerBoardMover : MonoBehaviour

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using BlockBreaker.Board;
 using UniRx;
 using UnityEngine;
-namespace BlockBreaker
+namespace BlockBreaker.Manager
 {
     public class BoardBreakManager : MonoBehaviour
     {
