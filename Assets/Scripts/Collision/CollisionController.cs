@@ -39,6 +39,6 @@ namespace BlockBreaker.Collision
     }
     public enum CollisionType
     {
-        None = 0, Wall, Block, Ball
+        None = 0, Wall, Block, Ball, Board
     }
 }
