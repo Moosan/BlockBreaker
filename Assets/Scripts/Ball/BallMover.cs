@@ -19,7 +19,7 @@ namespace BlockBreaker.Ball
             BallProvider = GetComponent<BallProvider>();
             Rigidbody = GetComponent<Rigidbody>();
         }
-        public void Init(IObservable<Unit> moveStartObservable, IMoveInput moveInput, GameRule gameRule)
+        public void Init(IObservable<Unit> moveStartObservable, IMoveInput moveInput, GameRuleHandler gameRule)
         {
             moveStartObservable
                 .TakeUntilDestroy(gameObject)

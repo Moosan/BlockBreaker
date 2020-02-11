@@ -7,8 +7,9 @@ using UniRx.Triggers;
 namespace BlockBreaker.Collision
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class CollisionController : MonoBehaviour
+    public class CollisionController : MonoBehaviour,ICollisionnable
     {
+        public CollisionType CollisionType = CollisionType.None;
         public IObservable<CollisionResult> CollisionStream => CollisionSubject;
         private readonly Subject<CollisionResult> CollisionSubject = new Subject<CollisionResult>();
         public IObservable<ContactPoint> ContactPointStream => ContactPointSubject;
@@ -23,6 +24,11 @@ namespace BlockBreaker.Collision
                     ContactPointSubject.OnNext(n.col.GetContact(0));
                     CollisionSubject.OnNext(n.icol.OnCollisionEnter());
                 });
+        }
+
+        public CollisionResult OnCollisionEnter()
+        {
+            return new CollisionResult(CollisionType);
         }
     }
     public interface ICollisionnable

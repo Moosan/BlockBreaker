@@ -15,7 +15,7 @@ namespace BlockBreaker.Board
         {
             _rigidBody = GetComponent<Rigidbody>();
         }
-        public void Init(IObservable<Unit> moveStartObservable,IMoveInput moveInput,GameRule gameRule)
+        public void Init(IObservable<Unit> moveStartObservable,IMoveInput moveInput,GameRuleHandler gameRule)
         {
             moveStartObservable
                 .TakeUntilDestroy(gameObject)
@@ -24,6 +24,7 @@ namespace BlockBreaker.Board
                 .Subscribe(_ =>
                 {
                     moveStart = true;
+                    var moveStream = new Subject<float>();
                     var inputStream = this.UpdateAsObservable()
                         .TakeUntilDestroy(gameObject)
                         .WithLatestFrom(moveInput.MoveVertical.Timestamp(), (u, val) => val)
@@ -31,13 +32,17 @@ namespace BlockBreaker.Board
                     inputStream
                         .Take(1)
                         .Select(t => t.Value)
-                        .Subscribe(Move)
+                        .Subscribe(moveStream.OnNext)
                         .AddTo(gameObject);
                     inputStream
+                        .TakeUntilDestroy(gameObject)
                         .Pairwise()
                         .Select(p => p.Previous.Timestamp != p.Current.Timestamp ? p.Current.Value : 0)
-                        .Subscribe(Move)
-                        .AddTo(gameObject);
+                        .Subscribe(moveStream.OnNext);
+                    this.FixedUpdateAsObservable()
+                        .TakeUntilDestroy(gameObject)
+                        .WithLatestFrom(moveStream, (u, val) => val)
+                        .Subscribe(Move);
                 });
             gameRule
                 .BoardSpeed

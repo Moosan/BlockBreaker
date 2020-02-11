@@ -8,20 +8,23 @@ namespace BlockBreaker.Manager
     public class BoardBreakManager : MonoBehaviour
     {
         public PlayerBoardMover PlayerBoardMover;
-        public BallProvider BallProvider; 
+        public BallProvider BallProvider;
         public AxisMoveController ArrowMoveController;
-        public GameRule GameRule = new GameRule(3,2);
+        public int GameStartInterval;
+        public GameRule GameRule;
+        private GameRuleHandler GameRuleHandler;
         private readonly BoardBreakEvent boardBreakEvent = new BoardBreakEvent();
         private readonly TimeCountFactory timeCountManager = new TimeCountFactory();
         
         private void Awake()
         {
-            PlayerBoardMover.Init(boardBreakEvent.GameStart,ArrowMoveController,GameRule);
-            BallProvider.BallMover.Init(boardBreakEvent.GameStart, ArrowMoveController, GameRule);
+            GameRuleHandler = new GameRuleHandler(GameRule);
+            PlayerBoardMover.Init(boardBreakEvent.GameStart,ArrowMoveController,GameRuleHandler);
+            BallProvider.BallMover.Init(boardBreakEvent.GameStart, ArrowMoveController, GameRuleHandler);
             boardBreakEvent.GameStart.Subscribe(_ => Debug.Log("GameStart"));
 
             timeCountManager
-                ?.CreateCountDownObservable(5)
+                ?.CreateCountDownObservable(GameStartInterval)
                 .Subscribe(t => Debug.Log(t), () => boardBreakEvent.GameStart.OnNext(Unit.Default));
         }
 

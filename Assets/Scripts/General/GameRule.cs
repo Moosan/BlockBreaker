@@ -2,14 +2,20 @@
 using UniRx;
 namespace BlockBreaker.General
 {
-    public class GameRule
+    public class GameRuleHandler
     {
         public ReactiveProperty<float> BoardSpeed { get; }
         public ReactiveProperty<float> BallSpeed { get; }
-        public GameRule(float boardSpeed,float ballSpeed)
+        public GameRuleHandler(GameRule gameRule)
         {
-            BoardSpeed = new ReactiveProperty<float>(boardSpeed);
-            BallSpeed = new ReactiveProperty<float>(ballSpeed);
+            BoardSpeed = new ReactiveProperty<float>(gameRule.BoardSpeed);
+            BallSpeed = new ReactiveProperty<float>(gameRule.BallSpeed);
         }
+    }
+    [Serializable]
+    public struct GameRule
+    {
+        public float BoardSpeed;
+        public float BallSpeed;
     }
 }
