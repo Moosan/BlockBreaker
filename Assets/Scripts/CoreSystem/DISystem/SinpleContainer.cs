@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,35 +7,47 @@ namespace CoreSystem.DISystem
 {
     public class Container
     {
-        private Dictionary<Type, BindInfo> BindInfos { get; } = new Dictionary<Type, BindInfo>();
-        public void Bind<T>(BindInfo<T>.CreateDelegate createDelegate) where T : class
+        private Dictionary<string, BindInfo> BindInfos { get; } = new Dictionary<string, BindInfo>();
+        public void Bind<T>(string id,BindInfo<T>.CreateDelegate createDelegate)
         {
-            var key = typeof(T);
+            var key = BindInfoId.Key<T>(id);
             if (BindInfos.ContainsKey(key))
             {
                 Debug.Log(key + " is already binded.");
                 // TODO bind type
                 return;
             }
-            BindInfos.Add(typeof(T),new BindInfo<T>(createDelegate));
+            BindInfos.Add(key,new BindInfo<T>(createDelegate));
         }
 
-        public T Get<T>() where T : class
+        public void Bind<T>(string id) where T : new()
         {
-            var key = typeof(T);
+            Bind(id, c => new T());
+        }
+        public T Get<T>(string id) where T : class
+        {
+            var key = BindInfoId.Key<T>(id);
             if (!BindInfos.ContainsKey(key))
             {
                 Debug.Log(key + " is not binded.");
                 return null;
             }
-            return ((BindInfo<T>)BindInfos[typeof(T)]).Get(this);
+            return ((BindInfo<T>)BindInfos[key]).Get(this);
+        }
+
+        private static class BindInfoId
+        {
+            public static string Key<T>(string BindId)
+            {
+                return BindId + ".." + typeof(T).Name;
+            }
         }
 
         public abstract class BindInfo
         {
 
         }
-        public class BindInfo<T> : BindInfo where T : class
+        public class BindInfo<T> : BindInfo
         {
             public delegate T CreateDelegate(Container container);
             private CreateDelegate Create { get; }

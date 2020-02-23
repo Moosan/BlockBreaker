@@ -6,21 +6,24 @@ namespace CoreSystem.DISystem.Sample
         private void Awake()
         {
             var container = new Container();
-            container.Bind(c => new TestLog("test"));
-            container.Bind(c => new TestA(c.Get<TestLog>()));
-            container.Bind(c => new TestB(c.Get<TestA>(), c.Get<TestLog>()));
+            container.Bind<TestLog>("test");
+            container.Bind<ILogger>("test", c => c.Get<TestLog>("test"));
+            container.Bind("test", c => new TestLog());
+            container.Bind("test", c => new TestA(c.Get<TestLog>("test")));
+            container.Bind("test", c => new TestB(c.Get<TestA>("test"), c.Get<TestLog>("test")));
 
-            var testB = container.Get<TestB>();
+            var testB = container.Get<TestB>("test");
         }
     }
 
-    public class TestLog
+    public interface ILogger
     {
-        public string Log { get; }
-        public TestLog(string log)
-        {
-            Log = log;
-        }
+
+    }
+
+    public class TestLog : ILogger
+    {
+
     }
 
     public class TestA
